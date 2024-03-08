@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.test.sentra.entities.User;
+import com.test.sentra.entities.UserEntity;
 import com.test.sentra.services.UserService;
 
 import jakarta.validation.Valid;
@@ -31,13 +31,13 @@ public class UserController {
 	private UserService UserService;
 	
 	@GetMapping
-	public List<User> UserList(){
+	public List<UserEntity> UserList(){
 		return UserService.findAll();
 	}
 	
 	@GetMapping("/{userID}")
 	public ResponseEntity<?> UserById(@PathVariable Long userID) {
-		Optional<User> UserOPT = UserService.findById(userID);
+		Optional<UserEntity> UserOPT = UserService.findById(userID);
 		if(UserOPT.isPresent()) {
 			return ResponseEntity.ok(UserOPT.orElseThrow());
 		}
@@ -45,19 +45,19 @@ public class UserController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> createUser(@Valid @RequestBody User user, BindingResult result){
+	public ResponseEntity<?> createUser(@Valid @RequestBody UserEntity userEntity, BindingResult result){
 		if(result.hasFieldErrors()) {
 			return validation(result);
 		}
-		return ResponseEntity.status(HttpStatus.CREATED).body(UserService.save(user));
+		return ResponseEntity.status(HttpStatus.CREATED).body(UserService.save(userEntity));
 	}
 	
 	@PutMapping("/{userID}")
-	public ResponseEntity<?> updateUser(@Valid @RequestBody User user, BindingResult result, @PathVariable Long userID){
+	public ResponseEntity<?> updateUser(@Valid @RequestBody UserEntity userEntity, BindingResult result, @PathVariable Long userID){
 		if(result.hasFieldErrors()) {
 			return validation(result);
 		}
-		Optional<User> UserOPT = UserService.update(user, userID);
+		Optional<UserEntity> UserOPT = UserService.update(userEntity, userID);
 		if(UserOPT.isPresent()) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(UserOPT.orElseThrow());
 		}
@@ -67,7 +67,7 @@ public class UserController {
 
 	@DeleteMapping("/{userID}")
 	public ResponseEntity<?> UserDelete(@PathVariable Long userID) {
-		Optional<User> UserOPT = UserService.delete(userID);
+		Optional<UserEntity> UserOPT = UserService.delete(userID);
 		if(UserOPT.isPresent()) {
 			return ResponseEntity.ok(UserOPT.orElseThrow());
 		}

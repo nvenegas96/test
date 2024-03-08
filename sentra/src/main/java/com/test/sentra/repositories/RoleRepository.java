@@ -4,9 +4,9 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.test.sentra.entities.Role;
+import com.test.sentra.entities.RoleEntity;
 
-public interface RoleRepository extends JpaRepository<Role, Long> {
+public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
 
-	Optional<Role> findByName(String name); 
+	Optional<RoleEntity> findByName(String name); 
 }

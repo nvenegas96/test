@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.test.sentra.entities.Phone;
+import com.test.sentra.entities.PhoneEntity;
 import com.test.sentra.services.PhoneService;
 
 import jakarta.validation.Valid;
@@ -31,13 +31,13 @@ public class PhoneController {
 	private PhoneService phoneService;
 	
 	@GetMapping
-	public List<Phone> phoneList(){
+	public List<PhoneEntity> phoneList(){
 		return phoneService.findAll();
 	}
 	
 	@GetMapping("/{phoneID}")
 	public ResponseEntity<?> phoneById(@PathVariable Long phoneID) {
-		Optional<Phone> phoneOPT = phoneService.findById(phoneID);
+		Optional<PhoneEntity> phoneOPT = phoneService.findById(phoneID);
 		if(phoneOPT.isPresent()) {
 			return ResponseEntity.ok(phoneOPT.orElseThrow());
 		}
@@ -45,19 +45,19 @@ public class PhoneController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<?> createPhone(@Valid @RequestBody Phone phone, BindingResult result){
+	public ResponseEntity<?> createPhone(@Valid @RequestBody PhoneEntity phoneEntity, BindingResult result){
 		if(result.hasFieldErrors()) {
 			return validation(result);
 		}
-		return ResponseEntity.status(HttpStatus.CREATED).body(phoneService.save(phone));
+		return ResponseEntity.status(HttpStatus.CREATED).body(phoneService.save(phoneEntity));
 	}
 	
 	@PutMapping("/{phoneID}")
-	public ResponseEntity<?> updatePhone(@Valid @RequestBody Phone phone, BindingResult result,@PathVariable Long phoneID){
+	public ResponseEntity<?> updatePhone(@Valid @RequestBody PhoneEntity phoneEntity, BindingResult result,@PathVariable Long phoneID){
 		if(result.hasFieldErrors()) {
 			return validation(result);
 		}
-		Optional<Phone> phoneOPT = phoneService.update(phone, phoneID);
+		Optional<PhoneEntity> phoneOPT = phoneService.update(phoneEntity, phoneID);
 		if(phoneOPT.isPresent()) {
 			return ResponseEntity.status(HttpStatus.CREATED).body(phoneOPT.orElseThrow());
 		}
@@ -67,7 +67,7 @@ public class PhoneController {
 
 	@DeleteMapping("/{phoneID}")
 	public ResponseEntity<?> phoneDelete(@PathVariable Long phoneID) {
-		Optional<Phone> phoneOPT = phoneService.delete(phoneID);
+		Optional<PhoneEntity> phoneOPT = phoneService.delete(phoneID);
 		if(phoneOPT.isPresent()) {
 			return ResponseEntity.ok(phoneOPT.orElseThrow());
 		}

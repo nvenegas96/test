@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.test.sentra.entities.Phone;
+import com.test.sentra.entities.PhoneEntity;
 import com.test.sentra.repositories.PhoneRepository;
 import com.test.sentra.services.PhoneService;
 
@@ -19,36 +19,36 @@ public class PhoneServiceImpl implements PhoneService{
 
 	@Override
 	@Transactional(readOnly=true)
-	public List<Phone> findAll() {
+	public List<PhoneEntity> findAll() {
 	
-		return (List<Phone>) phoneRepository.findAll();
+		return (List<PhoneEntity>) phoneRepository.findAll();
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public Optional<Phone> findById(Long phoneID) {
+	public Optional<PhoneEntity> findById(Long phoneID) {
 		
 		return phoneRepository.findById(phoneID);
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public Phone save(Phone phone) {
+	public PhoneEntity save(PhoneEntity phoneEntity) {
 		
-		return phoneRepository.save(phone);
+		return phoneRepository.save(phoneEntity);
 	}
 	
 	@Override
 	@Transactional(readOnly=true)
-	public Optional<Phone> update(Phone phone, Long phoneID) {
+	public Optional<PhoneEntity> update(PhoneEntity phoneEntity, Long phoneID) {
 		
-		Optional<Phone> phoneDBOPT = phoneRepository.findById(phoneID);
+		Optional<PhoneEntity> phoneDBOPT = phoneRepository.findById(phoneID);
 		if(phoneDBOPT.isPresent()) {
-			Phone phoneDB = phoneDBOPT.orElseThrow();
+			PhoneEntity phoneDB = phoneDBOPT.orElseThrow();
 			
-			phoneDB.setNumber(phone.getNumber());
-			phoneDB.setcontrycode(phone.getcontrycode());
-			phoneDB.setCitycode(phone.getCitycode());
+			phoneDB.setNumber(phoneEntity.getNumber());
+			phoneDB.setContrycode(phoneEntity.getContrycode());
+			phoneDB.setCitycode(phoneEntity.getCitycode());
 			
 			return Optional.of(phoneRepository.save(phoneDB));
 		}
@@ -59,9 +59,9 @@ public class PhoneServiceImpl implements PhoneService{
 
 	@Override
 	@Transactional(readOnly=true)
-	public Optional<Phone> delete(Long phoneID) {
+	public Optional<PhoneEntity> delete(Long phoneID) {
 	
-		Optional<Phone> phoneDBOPT = phoneRepository.findById(phoneID);
+		Optional<PhoneEntity> phoneDBOPT = phoneRepository.findById(phoneID);
 		phoneDBOPT.ifPresent(phoneDB -> {
 			phoneRepository.delete(phoneDB);
 		});

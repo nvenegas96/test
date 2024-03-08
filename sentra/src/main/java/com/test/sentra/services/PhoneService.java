@@ -3,18 +3,18 @@ package com.test.sentra.services;
 import java.util.List;
 import java.util.Optional;
 
-import com.test.sentra.entities.Phone;
+import com.test.sentra.entities.PhoneEntity;
 
 public interface PhoneService {
 	
-	List<Phone> findAll();
+	List<PhoneEntity> findAll();
 	
-	Optional<Phone> findById(Long phoneID);
+	Optional<PhoneEntity> findById(Long phoneID);
 	
-	Phone save(Phone phone);
+	PhoneEntity save(PhoneEntity phoneEntity);
 	
-	Optional<Phone> update(Phone phone, Long phoneID);
+	Optional<PhoneEntity> update(PhoneEntity phoneEntity, Long phoneID);
 	
-	Optional<Phone> delete(Long phoneID);
+	Optional<PhoneEntity> delete(Long phoneID);
 
 }

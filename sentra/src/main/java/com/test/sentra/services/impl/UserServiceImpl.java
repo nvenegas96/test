@@ -1,16 +1,20 @@
 package com.test.sentra.services.impl;
 
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.test.sentra.entities.Role;
-import com.test.sentra.entities.User;
+import com.test.sentra.entities.PhoneEntity;
+import com.test.sentra.entities.RoleEntity;
+import com.test.sentra.entities.UserEntity;
+import com.test.sentra.repositories.PhoneRepository;
 import com.test.sentra.repositories.RoleRepository;
 import com.test.sentra.repositories.UserRepository;
 import com.test.sentra.services.UserService;
@@ -25,53 +29,72 @@ public class UserServiceImpl implements UserService{
 	private RoleRepository roleRepository;
 	
 	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private PhoneRepository phoneRepository;
 
 	@Override
 	@Transactional(readOnly=true)
-	public List<User> findAll() {
+	public List<UserEntity> findAll() {
 	
-		return (List<User>) userRepository.findAll();
+		return (List<UserEntity>) userRepository.findAll();
 	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public Optional<User> findById(Long userID) {
+	public Optional<UserEntity> findById(Long userID) {
 		
 		return userRepository.findById(userID);
 	}
+	
+	private void validateEmail(UserEntity userEntity) {
+		if(userRepository.countAllByEmail(userEntity.getEmail()) != 0) {
+			throw new RuntimeException("El correo ya registrado");
+		}
+		
+	}
 
 	@Override
 	@Transactional(readOnly=true)
-	public User save(User user) {
+	public UserEntity save(UserEntity userEntity) {
+		validateEmail(userEntity);
+		Optional<RoleEntity> optRoleUser = roleRepository.findByName("ROLE_USER");
+		List<RoleEntity> roleEntities = new ArrayList<>();
+		optRoleUser.ifPresent(roleEntities::add);
+		userEntity.setActive(true);
+		userEntity.setCreated(new Date());
+		userEntity.setModified(new Date());
+		userEntity.setLastlogin(new Date());
+		userEntity.setToken(UUID.randomUUID().toString());
 		
-		Optional<Role> optRoleUser = roleRepository.findByName("ROLE_USER");
-		List<Role> roles = new ArrayList<>();
-		optRoleUser.ifPresent(roles::add);
-		user.setActive(true);
 		
-		if(user.isAdmin()) {
-			Optional<Role> optRoleAdmin = roleRepository.findByName("ROLE_ADMIN");
-			optRoleAdmin.ifPresent(roles::add);
+		
+		if(userEntity.isAdmin()) {
+			Optional<RoleEntity> optRoleAdmin = roleRepository.findByName("ROLE_ADMIN");
+			optRoleAdmin.ifPresent(roleEntities::add);
 		}
 		
-		user.setRoles(roles);
-		user.setPassword(passwordEncoder.encode(user.getPassword()));
-		return userRepository.save(user);
+		userEntity.setRoleEntities(roleEntities);
+		userEntity.setPassword(Base64.getEncoder().encodeToString(userEntity.getPassword().getBytes()));
+		userEntity = userRepository.save(userEntity);
+		
+		for(PhoneEntity phoneEntity: userEntity.getPhones()) {
+			phoneEntity.setUserID(userEntity.getUserID());
+			phoneRepository.save(phoneEntity);
+		}
+		
+		return userEntity;
 	}
 	
 	@Override
 	@Transactional(readOnly=true)
-	public Optional<User> update(User user, Long userID) {
+	public Optional<UserEntity> update(UserEntity userEntity, Long userID) {
 		
-		Optional<User> UserDBOPT = userRepository.findById(userID);
+		Optional<UserEntity> UserDBOPT = userRepository.findById(userID);
 		if(UserDBOPT.isPresent()) {
-			User UserDB = UserDBOPT.orElseThrow();
+			UserEntity UserDB = UserDBOPT.orElseThrow();
 			
-			UserDB.setName(user.getName());
-			UserDB.setEmail(user.getEmail());
-			UserDB.setPassword(user.getPassword());
-			UserDB.setPhones(user.getPhones());
+			UserDB.setName(userEntity.getName());
+			UserDB.setEmail(userEntity.getEmail());
+			UserDB.setPassword(userEntity.getPassword());
 			
 			return Optional.of(userRepository.save(UserDB));
 		}
@@ -82,9 +105,9 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	@Transactional(readOnly=true)
-	public Optional<User> delete(Long userID) {
+	public Optional<UserEntity> delete(Long userID) {
 	
-		Optional<User> UserDBOPT = userRepository.findById(userID);
+		Optional<UserEntity> UserDBOPT = userRepository.findById(userID);
 		UserDBOPT.ifPresent(UserDB -> {
 			userRepository.delete(UserDB);
 		});

@@ -3,19 +3,19 @@ package com.test.sentra.services;
 import java.util.List;
 import java.util.Optional;
 
-import com.test.sentra.entities.User;
+import com.test.sentra.entities.UserEntity;
 
 public interface UserService {
 	
-	List<User> findAll();
+	List<UserEntity> findAll();
 	
-	Optional<User> findById(Long userID);
+	Optional<UserEntity> findById(Long userID);
 	
-	User save(User user);
+	UserEntity save(UserEntity userEntity);
 	
-	Optional<User> update(User user, Long userID);
+	Optional<UserEntity> update(UserEntity userEntity, Long userID);
 	
-	Optional<User> delete(Long userID);
+	Optional<UserEntity> delete(Long userID);
 	
 
 }

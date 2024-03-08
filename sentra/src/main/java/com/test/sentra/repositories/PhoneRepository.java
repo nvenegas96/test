@@ -2,8 +2,8 @@ package com.test.sentra.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.test.sentra.entities.Phone;
+import com.test.sentra.entities.PhoneEntity;
 
-public interface PhoneRepository extends JpaRepository<Phone, Long>{
+public interface PhoneRepository extends JpaRepository<PhoneEntity, Long>{
 
 }
